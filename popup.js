@@ -2,7 +2,7 @@ const formDiv = document.getElementById("form");
 const optionsDiv = document.getElementById("options");
 const usernameInput = document.getElementById("username");
 const passwordInput = document.getElementById("password");
-const statusText = document.getElementById("status");
+
 const themeToggle = document.getElementById("themeSwitcher");
 const themeLabel = document.getElementById("themeLabel");
 
@@ -37,14 +37,9 @@ document.getElementById("save").addEventListener("click", function () {
   });
 });
 
-// Open login page and inject script
+// Open login page (content.js is injected automatically by background.js on page load)
 document.getElementById("connect").addEventListener("click", () => {
-  chrome.tabs.create({ url: "https://172.22.2.6/connect/PortalMain" }, (tab) => {
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: ["content.js"]
-    });
-  });
+  chrome.tabs.create({ url: "https://172.22.2.6/connect/PortalMain" });
 });
 
 // Switch to form view

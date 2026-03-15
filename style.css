@@ -37,6 +37,7 @@ body.light {
     background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
     color: #000;
 }
+
 .container {
     display: flex;
     flex-direction: column;
@@ -52,12 +53,12 @@ h1 {
 }
 
 input {
-    width: 90%;
-    padding: 14px;
-    margin: 10px 0;
-    font-size: 1rem;
+    padding: 10px;
+    margin: 8px;
+    width: 80%;
     border: none;
     border-radius: 12px;
+    font-size: 14px;
     background-color: var(--input-bg);
     color: var(--text-color);
     box-shadow: 0 0 0 1px var(--accent);
@@ -85,19 +86,28 @@ button:hover {
     background-color: #7a75c4;
 }
 
-input {
-    padding: 10px;
-    margin: 8px;
-    width: 80%;
-    border: none;
+/* Toast notification */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #4BB543;
+    color: white;
+    padding: 10px 18px;
     border-radius: 12px;
-    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: opacity 0.3s ease;
+    z-index: 9999;
 }
 
-#status {
-    margin: 8px 0;
-    font-size: 0.9rem;
-    color: var(--success-color);
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.show {
+    opacity: 1;
 }
 
 /* Toggle Switch */
@@ -148,15 +158,4 @@ input:checked+.slider {
 
 input:checked+.slider:before {
     transform: translateX(20px);
-}
-#status {
-    margin: 8px 0;
-    font-size: 0.9rem;
-    color: var(--success-color);
-    opacity: 1;
-    transition: opacity 0.5s ease;
-}
-
-#status.hidden {
-    opacity: 0;
 }

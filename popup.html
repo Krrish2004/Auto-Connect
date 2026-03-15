@@ -28,38 +28,10 @@
 
         <div id="options" style="display: none;">
             <div id="toast" class="toast hidden">✔️ Saved</div>
-            <style>
-                .toast {
-                    position: fixed;
-                    bottom: 20px;
-                    right: 20px;
-                    background-color: #4BB543;
-                    color: white;
-                    padding: 10px 18px;
-                    border-radius: 12px;
-                    font-weight: 600;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                    transition: opacity 0.3s ease;
-                    z-index: 9999;
-                }
-            
-                .hidden {
-                    opacity: 0;
-                    pointer-events: none;
-                }
-            
-                .show {
-                    opacity: 1;
-                }
-            </style>
-
-
             <button id="connect">Connect</button>
             <button id="change">Change Details</button>
         </div>
     </div>
-    <div id="toast" class="hidden">Credentials saved</div>
-
 
     <script src="popup.js"></script>
 </body>
