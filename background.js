@@ -11,15 +11,23 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
+// Listen for messages from content.js (login complete → close reconnect tab early)
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg.type === "loginComplete") {
+    chrome.alarms.clear("closeReconnectTab");
+    cleanupReconnectTab();
+  }
+});
+
 // Set up the 2-hour auto-refresh alarm on install/startup
 chrome.runtime.onInstalled.addListener(() => {
   chrome.alarms.create("autoReconnect", { periodInMinutes: CYCLE_MINUTES });
-  chrome.storage.local.remove("_reconnectTabId"); // Clean stale tab id from previous session
+  chrome.storage.local.remove(["_reconnectTabId", "_reconnectWindowId", "_reconnectCycle"]);
 });
 
 chrome.runtime.onStartup.addListener(() => {
   chrome.alarms.create("autoReconnect", { periodInMinutes: CYCLE_MINUTES });
-  chrome.storage.local.remove("_reconnectTabId"); // Clean stale tab id from previous session
+  chrome.storage.local.remove(["_reconnectTabId", "_reconnectWindowId", "_reconnectCycle"]);
 });
 
 // Single alarm listener for all alarms
@@ -35,32 +43,48 @@ function handleReconnect() {
   chrome.storage.local.get(["username", "password", "_reconnectTabId"], ({ username, password, _reconnectTabId }) => {
     if (!username || !password) return;
 
-    // Close any leftover tab from a previous reconnect cycle (prevents orphaned tabs)
+    // Close any leftover tab from a previous reconnect cycle
     if (_reconnectTabId) {
       chrome.tabs.remove(_reconnectTabId).catch(() => {});
       chrome.storage.local.remove("_reconnectTabId");
     }
 
-    // Only open a tab if a browser window exists (avoid surprise windows on macOS)
-    chrome.windows.getAll({}, (windows) => {
-      if (!windows || windows.length === 0) return;
-
-      chrome.tabs.create(
-        { url: PORTAL_URL + "/logout", active: false },
-        (tab) => {
-          if (chrome.runtime.lastError || !tab) return;
-          chrome.storage.local.set({ _reconnectTabId: tab.id });
-          chrome.alarms.create("closeReconnectTab", { delayInMinutes: 0.5 }); // 30 seconds
+    // Set reconnect flag so content.js knows to logout+re-login
+    chrome.storage.local.set({ _reconnectCycle: true }, () => {
+      chrome.windows.getAll({}, (windows) => {
+        if (windows && windows.length > 0) {
+          chrome.tabs.create(
+            { url: PORTAL_URL + "/connect/PortalMain", active: false },
+            (tab) => {
+              if (chrome.runtime.lastError || !tab) return;
+              chrome.storage.local.set({ _reconnectTabId: tab.id });
+              // Safety net — close after 2 minutes if content.js doesn't signal completion
+              chrome.alarms.create("closeReconnectTab", { delayInMinutes: 2 });
+            }
+          );
+        } else {
+          chrome.windows.create(
+            { url: PORTAL_URL + "/connect/PortalMain", state: "minimized", focused: false },
+            (win) => {
+              if (chrome.runtime.lastError || !win || !win.tabs || !win.tabs[0]) return;
+              chrome.storage.local.set({ _reconnectTabId: win.tabs[0].id, _reconnectWindowId: win.id });
+              chrome.alarms.create("closeReconnectTab", { delayInMinutes: 2 });
+            }
+          );
         }
-      );
+      });
     });
   });
 }
 
 function cleanupReconnectTab() {
-  chrome.storage.local.get(["_reconnectTabId"], ({ _reconnectTabId }) => {
-    if (!_reconnectTabId) return;
-    chrome.tabs.remove(_reconnectTabId).catch(() => {});
-    chrome.storage.local.remove("_reconnectTabId");
+  chrome.storage.local.get(["_reconnectTabId", "_reconnectWindowId"], ({ _reconnectTabId, _reconnectWindowId }) => {
+    if (_reconnectWindowId) {
+      chrome.windows.remove(_reconnectWindowId).catch(() => {});
+      chrome.storage.local.remove(["_reconnectTabId", "_reconnectWindowId", "_reconnectCycle"]);
+    } else if (_reconnectTabId) {
+      chrome.tabs.remove(_reconnectTabId).catch(() => {});
+      chrome.storage.local.remove(["_reconnectTabId", "_reconnectCycle"]);
+    }
   });
 }
