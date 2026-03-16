@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a1628"/>
+      <stop offset="100%" stop-color="#0f1f3d"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0.1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
+
+  <!-- Subtle glow circle behind WiFi -->
+  <circle cx="64" cy="58" r="34" fill="url(#glow)"/>
+
+  <!-- WiFi signal arcs -->
+  <g fill="none" stroke="url(#accent)" stroke-width="5.5" stroke-linecap="round">
+    <!-- Outer arc -->
+    <path d="M28 52a42 42 0 0 1 72 0"/>
+    <!-- Middle arc -->
+    <path d="M38 60a30 30 0 0 1 52 0"/>
+    <!-- Inner arc -->
+    <path d="M48 68a18 18 0 0 1 32 0"/>
+  </g>
+
+  <!-- Center dot -->
+  <circle cx="64" cy="78" r="5" fill="url(#accent)"/>
+
+  <!-- Auto-refresh circular arrow at bottom -->
+  <g transform="translate(64, 106)">
+    <path d="M-14 0a14 14 0 0 1 25.5-7.8" fill="none" stroke="#00e5ff" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+    <path d="M14 0a14 14 0 0 1-25.5 7.8" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+    <!-- Arrow heads -->
+    <polygon points="12.5,-9.3 11,-4.5 16,-5.5" fill="#00e5ff" opacity="0.7"/>
+    <polygon points="-12.5,9.3 -11,4.5 -16,5.5" fill="#7c3aed" opacity="0.7"/>
+  </g>
+</svg>
